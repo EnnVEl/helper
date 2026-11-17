@@ -1,54 +1,54 @@
 import logging
+import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-# Включаем логирование, чтобы видеть ошибки
 logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
 )
+
+# Токен берём из переменной окружения (на GitHub — из Secrets)
+TOKEN = os.environ.get("BOT_TOKEN")
+if not TOKEN:
+    raise RuntimeError("Не задан BOT_TOKEN в переменных окружения")
+
 
 async def game_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отправляет сообщение с кнопками-ссылками по команде /game."""
-    
-    # --- НАСТРОЙКА ВАШИХ ССЫЛОК И ТЕКСТА ---
+
+    # --- НАСТРОЙКА ССЫЛОК ---
     # Формат: ("Текст кнопки", "Ссылка")
-    # Можно добавить сколько угодно слов/кнопок
     buttons_data = [
         ("Правила", "https://example.com/rules"),
         ("Донат", "https://example.com/donate"),
         ("Новости", "https://example.com/news"),
-        ("Поддержка", "https://example.com/support")
+        ("Поддержка", "https://example.com/support"),
     ]
-    # ---------------------------------------
+    # -------------------------
 
-    # Создаем список кнопок. 
-    # В данном случае каждая кнопка будет в отдельном ряду (одна под другой).
-    keyboard = []
-    for text, url in buttons_data:
-        keyboard.append([InlineKeyboardButton(text, url=url)])
-
-    # Обертка для отправки
+    keyboard = [[InlineKeyboardButton(text, url=url)] for text, url in buttons_data]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # Текст сообщения, которое придет вместе с кнопками
-    message_text = "Выберите нужный раздел:"
-
-    # Отправляем сообщение в тот чат, где была вызвана команда (личка или группа)
     await update.message.reply_text(
-        text=message_text,
-        reply_markup=reply_markup
+        text="Выберите нужный раздел:",
+        reply_markup=reply_markup,
     )
 
-def main() -> None:
-    # Создаем приложение с вашим токеном
-    application = Application.builder().token("ВАШ_ТОКЕН_ЗДЕСЬ").build()
 
-    # Регистрируем команду /game
+async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Привет! Отправь /game, чтобы увидеть меню.")
+
+
+def main() -> None:
+    application = Application.builder().token(TOKEN).build()
+
+    application.add_handler(CommandHandler("start", start_command))
     application.add_handler(CommandHandler("game", game_command))
 
-    # Запускаем бота
-    print("Бот запущен. Нажмите Ctrl+C для остановки.")
+    print("Бот запущен.")
     application.run_polling()
+
 
 if __name__ == "__main__":
     main()
