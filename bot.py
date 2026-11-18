@@ -20,7 +20,7 @@ async def game_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     # --- НАСТРОЙКА ССЫЛОК ---
     # Формат: ("Текст кнопки", "Ссылка")
     buttons_data = [
-        ("Не мой сосед", "https://ennvel.github.io/ne-mou-sosed/
+        ("Не мой сосед", "https://ennvel.github.io/ne-mou-sosed/"),
         ("SunnySide/SunnyGame"), "https://t.me/SunnySide20_bot"),
         ("TikTak", "https://t.me/TikTakTalk20_bot"),
         ("History ", "https://t.me/History_20_bot"),
